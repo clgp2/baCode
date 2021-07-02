@@ -1,6 +1,9 @@
 #todo: get rid of repeatable code!
 #todo for final version start timer for each script to know how long it takes to execute on specified cpu
 #general language pair with .src and .trg instead of en and ro --> provide arguments for script to choose language pair
+#use dictionary to reduce number of file paths
+#disclaminer: code partially inspired by joey-demo.ipynb
+#os.system is bad practice
 
 """""
 Script to turn data into modelling input. creates tokenized and byte-pair-encoded input files for 02-01-preprocessed/ and for 02-02-bicleaner-preprocessed/
@@ -31,9 +34,13 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 from subword_nmt.apply_bpe import BPE
 import urllib.request
-
 #for performance: better fast-mosestokenizer?
 from sacremoses import MosesTokenizer
+import fileinput
+
+src_lang="en"
+trg_lang="ro"
+
 mt_en = MosesTokenizer(lang='en')
 mt_ro = MosesTokenizer(lang='ro')
 
@@ -41,7 +48,6 @@ base_path = Path(__file__).parent
 
 path_build_vocab= (base_path / "../data/02-preprocessed/build_vocab.py").resolve()
 
-#1. word-level tokenization with sacremoses==================================================================================================
 path_fulldata= (base_path / "../data/01-intermediate/EN-RO-bisentences_new.txt").resolve()
 
 path_source_raw= (base_path / "../data/01-intermediate/01-01-fulldata/EN_raw.txt").resolve()
@@ -58,15 +64,6 @@ path_target_test1=(base_path / "../data/02-preprocessed/02-01-preprocessed/test.
 
 path_source_dev1=(base_path / "../data/02-preprocessed/02-01-preprocessed/dev.src").resolve()
 path_target_dev1=(base_path / "../data/02-preprocessed/02-01-preprocessed/dev.trg").resolve()
-
-path_source_train_bpe1=(base_path / "../data/02-preprocessed/02-01-preprocessed/train.bpe.en").resolve()
-path_target_train_bpe1=(base_path / "../data/02-preprocessed/02-01-preprocessed/train.bpe.ro").resolve()
-
-path_source_test_bpe1=(base_path / "../data/02-preprocessed/02-01-preprocessed/test.bpe.en").resolve()
-path_target_test_bpe1=(base_path / "../data/02-preprocessed/02-01-preprocessed/test.bpe.ro").resolve()
-
-path_source_dev_bpe1=(base_path / "../data/02-preprocessed/02-01-preprocessed/dev.bpe.en").resolve()
-path_target_dev_bpe1=(base_path / "../data/02-preprocessed/02-01-preprocessed/dev.bpe.ro").resolve()
 
 path_bpe_codes1= (base_path / "../data/02-preprocessed/02-01-preprocessed/bpe.codes.30000").resolve()
 path_vocab1= (base_path / "../data/02-preprocessed/02-01-preprocessed/vocab.txt").resolve()
@@ -91,19 +88,11 @@ path_target_test2=(base_path / "../data/02-preprocessed/02-02-bicleaner-preproce
 path_source_dev2=(base_path / "../data/02-preprocessed/02-02-bicleaner-preprocessed/dev.src").resolve()
 path_target_dev2=(base_path / "../data/02-preprocessed/02-02-bicleaner-preprocessed/dev.trg").resolve()
 
-path_source_train_bpe2=(base_path / "../data/02-preprocessed/02-02-bicleaner-preprocessed/train.bpe.en").resolve()
-path_target_train_bpe2=(base_path / "../data/02-preprocessed/02-02-bicleaner-preprocessed/train.bpe.ro").resolve()
-
-path_source_test_bpe2=(base_path / "../data/02-preprocessed/02-02-bicleaner-preprocessed/test.bpe.en").resolve()
-path_target_test_bpe2=(base_path / "../data/02-preprocessed/02-02-bicleaner-preprocessed/test.bpe.ro").resolve()
-
-path_source_dev_bpe2=(base_path / "../data/02-preprocessed/02-02-bicleaner-preprocessed/dev.bpe.en").resolve()
-path_target_dev_bpe2=(base_path / "../data/02-preprocessed/02-02-bicleaner-preprocessed/dev.bpe.ro").resolve()
-
 path_bpe_codes2= (base_path / "../data/02-preprocessed/02-02-bicleaner-preprocessed/bpe.codes.30000").resolve()
 path_vocab2= (base_path / "../data/02-preprocessed/02-02-bicleaner-preprocessed/vocab.txt").resolve()
 path_joint_train2= (base_path / "../data/02-preprocessed/02-02-bicleaner-preprocessed/train.en-ro").resolve()
 
+#1. word-level tokenization with sacremoses==================================================================================================
 #1.1 tokenize full version
 source_raw=pd.read_csv(path_fulldata, usecols=[0])
 target_raw=pd.read_csv(path_fulldata, usecols=[1])
@@ -169,33 +158,52 @@ target_dev.to_csv(path_target_dev2, header=None, index=None)
 #use python API for subword-nmt?
 
 #3.1 subword-level tokenization with BPE for fulldata files
-os.system(f"cat {path_source_train1} {path_target_train1} > {path_joint_train1}")
+bpe_size=30000
 
-os.system(f"subword-nmt learn-bpe --input {path_joint_train1} -s 30000 -o {path_bpe_codes1} ")
+with open(path_joint_train1, 'w') as fout, fileinput.input(path_source_train1, path_source_train2) as fin:
+    for line in fin:
+        fout.write(line)
 
-os.system(f"subword-nmt apply-bpe -c {path_bpe_codes1} < {path_source_train1} > {path_source_train_bpe1}")
-os.system(f"subword-nmt apply-bpe -c {path_bpe_codes1} < {path_target_train1} > {path_target_train_bpe1}")
- 
-os.system(f"subword-nmt apply-bpe -c {path_bpe_codes1} < {path_source_dev1} > {path_source_dev_bpe1}")
-os.system(f"subword-nmt apply-bpe -c {path_bpe_codes1} < {path_target_dev1} > {path_target_dev_bpe1}")
+#os.system(f"subword-nmt learn-bpe --input {path_joint_train1} -s {bpe_size} -o {path_bpe_codes1} ")
 
-os.system(f"subword-nmt apply-bpe -c {path_bpe_codes1} < {path_source_test1} > {path_source_test_bpe1}")
-os.system(f"subword-nmt apply-bpe -c {path_bpe_codes1} < {path_target_test1} > {path_target_test_bpe1}")
+src_files = {'train': path_source_train1, 'dev': path_source_dev1, 'test': path_source_test1}
+trg_files = {'train': path_target_train1, 'dev': path_target_dev1, 'test': path_target_test1}
+
+src_bpe_files = {}
+trg_bpe_files = {}
+
+for split in ['train', 'dev', 'test']:
+  src_input_file = src_files[split]
+  trg_input_file = trg_files[split]
+  src_output_file = src_input_file.replace(split, f"{split}.{bpe_size}.bpe")
+  trg_output_file = trg_input_file.replace(split, f"{split}.{bpe_size}.bpe")
+  src_bpe_files[split] = src_output_file
+  trg_bpe_files[split] = trg_output_file
+
+  os.system(f"subword-nmt apply-bpe -c {path_bpe_codes1} <{src_input_file}> {src_output_file}")
+  os.system(f"subword-nmt apply-bpe -c {path_bpe_codes1} <{trg_input_file}> {trg_output_file}")
 
 #3.2 subword-level tokenization with BPE for cleaned files
 os.system(f"cat {path_source_train2} {path_target_train2} > {path_joint_train2}")
 
-os.system(f"subword-nmt learn-bpe --input {path_joint_train2} -s 30000 -o {path_bpe_codes2} ")
+os.system(f"subword-nmt learn-bpe --input {path_joint_train2} -s {bpe_size} -o {path_bpe_codes2} ")
 
-os.system(f"subword-nmt apply-bpe -c {path_bpe_codes2} < {path_source_train2} > {path_source_train_bpe2}")
-os.system(f"subword-nmt apply-bpe -c {path_bpe_codes2} < {path_target_train2} > {path_target_train_bpe2}")
- 
-os.system(f"subword-nmt apply-bpe -c {path_bpe_codes2} < {path_source_dev2} > {path_source_dev_bpe2}")
-os.system(f"subword-nmt apply-bpe -c {path_bpe_codes2} < {path_target_dev2} > {path_target_dev_bpe2}")
+src_files_cleaned = {'train': path_source_train2, 'dev': path_source_dev2, 'test': path_source_test2}
+trg_files_cleaned = {'train': path_target_train2, 'dev': path_target_dev2, 'test': path_target_test2}
 
-os.system(f"subword-nmt apply-bpe -c {path_bpe_codes2} < {path_source_test2} > {path_source_test_bpe2}")
-os.system(f"subword-nmt apply-bpe -c {path_bpe_codes2} < {path_target_test2} > {path_target_test_bpe2}")
+src_bpe_files_cleaned = {}
+trg_bpe_files_cleaned = {}
 
+for split in ['train', 'dev', 'test']:
+  src_input_file_cleaned = src_files_cleaned[split]
+  trg_input_file_cleaned = trg_files_cleaned[split]
+  src_output_file_cleaned = src_input_file_cleaned.replace(split, f'{split}.{bpe_size}.bpe')
+  trg_output_file_cleaned = trg_input_file_cleaned.replace(split, f'{split}.{bpe_size}.bpe')
+  src_bpe_files_cleaned[split] = src_output_file_cleaned
+  trg_bpe_files_cleaned[split] = trg_output_file_cleaned
+
+  os.system(f"subword-nmt apply-bpe -c {path_bpe_codes2} <{src_input_file_cleaned}> {src_output_file_cleaned}")
+  os.system(f"subword-nmt apply-bpe -c {path_bpe_codes2} <{trg_input_file_cleaned}> {trg_output_file_cleaned}")
 
 #vocabulary threshold for subword-nmt ?? -> best rpactices from site
 #make a loop for all these. it is possible that the train.src, etc. deleted before subword-nmt can use them, because os.system starts a new process??
@@ -214,8 +222,15 @@ os.remove(path_target_test2)
 
 # create vocabulary
 urllib.request.urlretrieve ("https://raw.githubusercontent.com/joeynmt/joeynmt/master/scripts/build_vocab.py", path_build_vocab)
-os.system(f"python {path_build_vocab} {path_source_train_bpe1} {path_target_train_bpe1} --output_path {path_vocab1}")
-os.system(f"python {path_build_vocab} {path_source_train_bpe2} {path_target_train_bpe2} --output_path {path_vocab2}")
+
+vocab_src_file=src_bpe_files["train"]
+vocab_trg_file=trg_bpe_files["train"]
+
+vocab_src_file_cleaned=src_bpe_files_cleaned["train"]
+vocab_trg_file_cleaned=trg_bpe_files_cleaned["train"]
+
+os.system(f"python {path_build_vocab} {vocab_src_file} {vocab_trg_file} --output_path {path_vocab1}")
+os.system(f"python {path_build_vocab} {vocab_src_file_cleaned} {vocab_trg_file_cleaned} --output_path {path_vocab2}")
 
 os.remove(path_build_vocab)
 os.remove(path_joint_train2)
