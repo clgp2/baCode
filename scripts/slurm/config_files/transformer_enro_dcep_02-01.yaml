@@ -5,19 +5,19 @@
 
 #create the config
 #config = """
-name: "bicleaner_transformer"
+name: "02-01-preprocessed"
 
 data:
     src: "en"
     trg: "ro"
-    train: "/home/bernadeta/bachelorarbeit/data/data_en_ro/dcep_training_files/biclenaer-tok-bpe/train.bpe"
-    dev: "/home/bernadeta/bachelorarbeit/data/data_en_ro/dcep_training_files/biclenaer-tok-bpe/dev.bpe"
-    test: "/home/bernadeta/bachelorarbeit/data/data_en_ro/dcep_training_files/biclenaer-tok-bpe/test.bpe"
+    train: "/home/bernadeta/BA_code/data/02-preprocessed/02-01-preprocessed/train.30000.bpe"
+    dev: "/home/bernadeta/BA_code/data/02-preprocessed/02-01-preprocessed/dev.30000.bpe"
+    test: "/home/bernadeta/BA_code/data/02-preprocessed/02-01-preprocessed/test.30000.bpe"
     level: "bpe"
     lowercase: False
     max_sent_length: 140
-    src_vocab: "/home/bernadeta/bachelorarbeit/data/data_en_ro/dcep_training_files/biclenaer-tok-bpe/vocab.txt"
-    trg_vocab: "/home/bernadeta/bachelorarbeit/data/data_en_ro/dcep_training_files/biclenaer-tok-bpe/vocab.txt"
+    src_vocab: "/home/bernadeta/BA_code/data/02-preprocessed/02-01-preprocessed/vocab.txt"
+    trg_vocab: "/home/bernadeta/BA_code/data/02-preprocessed/02-01-preprocessed/vocab.txt"
 
 testing:
     beam_size: 5
@@ -47,7 +47,7 @@ training:
     validation_freq: 5000
     logging_freq: 100
     eval_metric: "bleu"
-    model_dir: "/home/bernadeta/bachelorarbeit/experiments/bicleaner-tok-bpe/beamsize5"
+    model_dir: "/home/bernadeta/BA_code/models/02-01-preprocessed/beamsize5"
     overwrite: False
     shuffle: True
     use_cuda: True
