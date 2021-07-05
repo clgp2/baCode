@@ -35,7 +35,6 @@ from sklearn.model_selection import train_test_split
 import urllib.request
 #for performance: better fast-mosestokenizer?
 from sacremoses import MosesTokenizer
-import fileinput
 
 src_lang="en"
 trg_lang="ro"
@@ -92,21 +91,21 @@ path_vocab2= (base_path / "../data/02-preprocessed/02-02-bicleaner-preprocessed/
 path_joint_train2= (base_path / "../data/02-preprocessed/02-02-bicleaner-preprocessed/train.en-ro").resolve()
 
 #1. word-level tokenization with sacremoses==================================================================================================
-#1.1 tokenize full version
-# source_raw=pd.read_csv(path_fulldata, usecols=[0])
-# target_raw=pd.read_csv(path_fulldata, usecols=[1])
+# #1.1 tokenize full version
+source_raw=pd.read_csv(path_fulldata, usecols=[0])
+target_raw=pd.read_csv(path_fulldata, usecols=[1])
 
-# with open(path_source_raw) as rawfile, open(path_source_raw_tok, "w") as tokfile:
-#     for i, line in enumerate(rawfile):
-#         data=line.rstrip()
-#         tokfile.write(mt_en.tokenize(data, return_str=True)+"\n")
+with open(path_source_raw) as rawfile, open(path_source_raw_tok, "w") as tokfile:
+    for i, line in enumerate(rawfile):
+        data=line.rstrip()
+        tokfile.write(mt_en.tokenize(data, return_str=True)+"\n")
 
-# print("Completed writing EN_raw_tok.txt")
+print("Completed writing EN_raw_tok.txt")
 
-# with open(path_target_raw) as rawfile, open(path_target_raw_tok, "w") as tokfile:
-#     for i, line in enumerate(rawfile):
-#         data=line.rstrip()
-#         tokfile.write(mt_ro.tokenize(data, return_str=True)+"\n")
+with open(path_target_raw) as rawfile, open(path_target_raw_tok, "w") as tokfile:
+    for i, line in enumerate(rawfile):
+        data=line.rstrip()
+        tokfile.write(mt_ro.tokenize(data, return_str=True)+"\n")
 
 #1.2 tokenize cleaned version
 source_cleaned=pd.read_csv(path_cleaned, usecols=[0])
@@ -141,7 +140,7 @@ target_test_raw.to_csv(path_target_test1, header=None, index=None)
 source_dev_raw.to_csv(path_source_dev1, header=None, index=None)
 target_dev_raw.to_csv(path_target_dev1, header=None, index=None)
 
-# 2.2 split cleaned version
+# 2.2 split cleaned version --> pull dev and test from cleaned and than substract that df's from raw
 df_source_tok= pd.read_csv(path_source_tok, header=None, sep="\n")
 df_target_tok=pd.read_csv(path_target_tok, header=None, sep="\n")
 
@@ -160,7 +159,7 @@ target_dev.to_csv(path_target_dev2, header=None, index=None)
 #3. subword-level tokenization with BPE=========================================================================================================
 #use python API for subword-nmt?
 
-#3.1 subword-level tokenization with BPE for fulldata files
+# #3.1 subword-level tokenization with BPE for fulldata files
 bpe_size=30000
 
 os.system(f"cat {path_source_train1} {path_target_train1} > {path_joint_train1}")
@@ -224,13 +223,13 @@ for split in ['train', 'dev', 'test']:
 # create vocabulary
 urllib.request.urlretrieve ("https://raw.githubusercontent.com/joeynmt/joeynmt/master/scripts/build_vocab.py", path_build_vocab)
 
-vocab_src_file=src_bpe_files["train"]
-vocab_trg_file=trg_bpe_files["train"]
+# vocab_src_file=src_bpe_files["train"]
+# vocab_trg_file=trg_bpe_files["train"]
 
 vocab_src_file_cleaned=src_bpe_files_cleaned["train"]
 vocab_trg_file_cleaned=trg_bpe_files_cleaned["train"]
 
-os.system(f"python {path_build_vocab} {vocab_src_file} {vocab_trg_file} --output_path {path_vocab1}")
+#os.system(f"python {path_build_vocab} {vocab_src_file} {vocab_trg_file} --output_path {path_vocab1}")
 os.system(f"python {path_build_vocab} {vocab_src_file_cleaned} {vocab_trg_file_cleaned} --output_path {path_vocab2}")
 
 # os.remove(path_build_vocab)

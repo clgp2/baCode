@@ -1,4 +1,6 @@
 #script to evaluate performance: calculate BLEU with sacreBLEU for both cleaned and uncleaned version of the outputs
+#from https://blog.machinetranslation.io/compute-bleu-score/ 
+
 import sys
 import sacrebleu
 from sacremoses import MosesDetokenizer

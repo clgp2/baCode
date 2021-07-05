@@ -103,7 +103,7 @@ model:
 """.format(name=name, source_language=src_lang, target_language=trg_lang,
            datadir=datadir, modeldir=modeldir)
 
-with open("test".format(name=name),'w') as f:
+with open("config_file.yaml".format(name=name),'w') as f:
     f.write(config)
 
 #would use a shell script to submit to slurm

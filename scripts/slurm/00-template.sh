@@ -27,6 +27,6 @@ module add Python/3.8.6-GCCcore-10.2.0
 source /home/bernadeta/python-venvs/joeynmt/bin/activate
 
 # Train the model
-python3 -m joeynmt train ${path_to_config_file} --output_path=${path_to_model_dir}
+python3 -m joeynmt train ${path_to_config_file} --output_path ${path_to_model_dir}
 
 mv "slurm-${JOB_ID}.out" "${path_to_model_dir}/"
