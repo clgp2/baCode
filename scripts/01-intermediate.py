@@ -1,4 +1,19 @@
-#script to transform data from raw to intermediate full and cleaned
+#script to transform data from raw to intermediate basic and bicleaner cleaned
+""" 
+use "scripts" venv because here is bicleaner and cmake installed after having done:
+module add CMake
+module add Python
+
+pip install bicleaner and
+
+git clone https://github.com/kpu/kenlm
+cd kenlm
+python3.7 -m pip install . --install-option="--max_order 7"
+mkdir -p build && cd build
+cmake .. -DKENLM_MAX_ORDER=7 -DCMAKE_INSTALL_PREFIX:PATH=/your/prefix/path
+make -j all install
+"""
+
 import pandas as pd
 import os
 from pathlib import Path
@@ -22,6 +37,7 @@ df=pd.read_csv(path_ENRO_bisents, sep='\t', names=['english', 'romanian'], quoti
 df=df.dropna()
 #no duplicate rows
 df=df.drop_duplicates()
+#also no alternative translation because this introduces leaked sentences into train set (especially subset english)
 
 def write_to_file(file_path, df):
     with open(file_path, "w") as myfile:

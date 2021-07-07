@@ -1,6 +1,6 @@
 #todo: get rid of repeatable code!
 #todo for final version start timer for each script to know how long it takes to execute on specified cpu
-#general language pair with .src and .trg instead of en and ro --> provide arguments for script to choose language pair
+#general language pair with .src and .trg instead of en and ro --> provide yaml file
 #use dictionary to reduce number of file paths
 #disclaminer: code partially inspired by joey-demo.ipynb
 #os.system is bad practice
@@ -8,21 +8,10 @@
 """""
 Script to turn data into modelling input. creates tokenized and byte-pair-encoded input files for 02-01-preprocessed/ and for 02-02-bicleaner-preprocessed/
 
--  bicleaner needs kenlm. to install with:
-
-git clone https://github.com/kpu/kenlm
-cd kenlm
-python3.7 -m pip install . --install-option="--max_order 7"
-mkdir -p build && cd build
-cmake .. -DKENLM_MAX_ORDER=7 -DCMAKE_INSTALL_PREFIX:PATH=/your/prefix/path
-make -j all install
-
-
 Steps performed in this file:
 
     1. word-level tokenization with sacremoses
-    2. split into traindevtest sets
-    3. subword-level tokenization with BPE
+    2. subword-level tokenization with BPE
     
 for each 02-01-preprocessed and 02-02-bicleaner-preprocessed 
 
@@ -91,7 +80,7 @@ path_vocab2= (base_path / "../data/02-preprocessed/02-02-bicleaner-preprocessed/
 path_joint_train2= (base_path / "../data/02-preprocessed/02-02-bicleaner-preprocessed/train.en-ro").resolve()
 
 #1. word-level tokenization with sacremoses==================================================================================================
-# #1.1 tokenize full version
+#1.1 tokenize full version
 source_raw=pd.read_csv(path_fulldata, usecols=[0])
 target_raw=pd.read_csv(path_fulldata, usecols=[1])
 
@@ -106,6 +95,8 @@ with open(path_target_raw) as rawfile, open(path_target_raw_tok, "w") as tokfile
     for i, line in enumerate(rawfile):
         data=line.rstrip()
         tokfile.write(mt_ro.tokenize(data, return_str=True)+"\n")
+
+print("Completed writing RO_raw_tok.txt")
 
 #1.2 tokenize cleaned version
 source_cleaned=pd.read_csv(path_cleaned, usecols=[0])
@@ -123,44 +114,14 @@ with open(path_target_cleaned) as rawfile, open(path_target_tok, "w") as tokfile
         data=line.rstrip()
         tokfile.write(mt_ro.tokenize(data, return_str=True)+"\n")
 
-# 2. split into traindevtest sets==============================================================================================================
-# 2.1 split full version
-df_source_raw_tok= pd.read_csv(path_source_raw_tok, header=None, sep="\n")
-df_target_raw_tok= pd.read_csv(path_target_raw_tok, header=None, sep="\n")
+print("Completed writing RO_cleaned_tok.txt")
 
-source_train_raw, source_test_raw, target_train_raw, target_test_raw = train_test_split(df_source_raw_tok, df_target_raw_tok, test_size=2000, random_state=42)
-source_train_raw, source_dev_raw, target_train_raw, target_dev_raw = train_test_split(source_train_raw, target_train_raw, test_size=2000, random_state=42)
 
-source_train_raw.to_csv(path_source_train1, header=None, index=None)
-target_train_raw.to_csv(path_target_train1, header=None, index=None)
+#2. subword-level tokenization with BPE=========================================================================================================
 
-source_test_raw.to_csv(path_source_test1, header=None, index=None)
-target_test_raw.to_csv(path_target_test1, header=None, index=None)
-
-source_dev_raw.to_csv(path_source_dev1, header=None, index=None)
-target_dev_raw.to_csv(path_target_dev1, header=None, index=None)
-
-# 2.2 split cleaned version --> pull dev and test from cleaned and than substract that df's from raw
-df_source_tok= pd.read_csv(path_source_tok, header=None, sep="\n")
-df_target_tok=pd.read_csv(path_target_tok, header=None, sep="\n")
-
-source_train, source_test, target_train, target_test = train_test_split(df_source_tok, df_target_tok, test_size=2000, random_state=42)
-source_train, source_dev, target_train, target_dev = train_test_split(source_train, target_train, test_size=2000, random_state=42)
-
-source_train.to_csv(path_source_train2, header=None, index=None)
-target_train.to_csv(path_target_train2, header=None, index=None)
-
-source_test.to_csv(path_source_test2, header=None, index=None)
-target_test.to_csv(path_target_test2, header=None, index=None)
-
-source_dev.to_csv(path_source_dev2, header=None, index=None)
-target_dev.to_csv(path_target_dev2, header=None, index=None)
-
-#3. subword-level tokenization with BPE=========================================================================================================
-#use python API for subword-nmt?
-
-# #3.1 subword-level tokenization with BPE for fulldata files
-bpe_size=30000
+#2.1 subword-level tokenization with BPE for fulldata files
+#reading paper "Finding the Optimal Vocabulary Size for NMT"
+bpe_size=8000
 
 os.system(f"cat {path_source_train1} {path_target_train1} > {path_joint_train1}")
 
