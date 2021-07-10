@@ -1,4 +1,9 @@
-#todo: get rid of repeatable code!
+###############################################################################
+# #############################################################################
+# #############################################################################
+# this script is not ready! use 02-processing notebook instead
+
+#todo: create meaningful functions for all this stuff
 #todo for final version start timer for each script to know how long it takes to execute on specified cpu
 #general language pair with .src and .trg instead of en and ro --> provide yaml file
 #use dictionary to reduce number of file paths

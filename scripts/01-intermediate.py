@@ -1,3 +1,8 @@
+###############################################################################
+# #############################################################################
+# #############################################################################
+# this script is not ready! use 01-intermediate notebook instead
+
 #script to transform data from raw to intermediate basic and bicleaner cleaned
 """ 
 use "scripts" venv because here is bicleaner and cmake installed after having done:
