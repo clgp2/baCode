@@ -1,4 +1,4 @@
-#script to download raw data
+#script to download raw data from DCEP website
 import urllib.request
 import tarfile
 import os
@@ -6,7 +6,7 @@ from pathlib import Path
 import shutil
 #check import yaml
 
-base_path = Path(__file__).parent
+base_path = Path(__file__).parent.parent
 
 #path to files
 path_en_monolingual = (base_path / "../EN.gz").resolve()
@@ -21,6 +21,7 @@ path_indices=(base_path / "../indices").resolve()
 
 path_raw=(base_path / "../data/00-raw/").resolve()
 
+#download monolingual datafiles
 urllib.request.urlretrieve ("http://optima.jrc.it/Resources/DCEP-2013/sentences/DCEP-sentence-EN-pub.tar.bz2", path_en_monolingual)
 urllib.request.urlretrieve ("http://optima.jrc.it/Resources/DCEP-2013/sentences/DCEP-sentence-RO-pub.tar.bz2", path_ro_monolingual)
 
@@ -52,7 +53,7 @@ os.system("src/languagepair.py EN-RO > EN-RO-bisentences.txt")
 path_bisentences=(base_path / "../EN-RO-bisentences.txt").resolve()
 
 #move EN-RO-bisentences.txt to raw/
-shutil.move(path_bisentences, path_raw)
+shutil.move(str(path_bisentences), str(path_raw))
 
 #remove temporary files
 shutil.rmtree(path_DCEP)

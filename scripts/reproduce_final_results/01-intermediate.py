@@ -1,11 +1,10 @@
 ###############################################################################
 # #############################################################################
 # #############################################################################
-# this script is not ready! use 01-intermediate notebook instead
-
-#script to transform data from raw to intermediate basic and bicleaner cleaned
+# this script is not ready! missing L3 creation from bicleaner with disabled rules
+#script to transform data from raw to intermediate L1, L2 and L3
 """ 
-use "scripts" venv because here is bicleaner and cmake installed after having done:
+use "scripts/ba-env-python3.8" venv because here is bicleaner and cmake installed after having done:
 module add CMake
 module add Python
 
@@ -13,7 +12,7 @@ pip install bicleaner and
 
 git clone https://github.com/kpu/kenlm
 cd kenlm
-python3.7 -m pip install . --install-option="--max_order 7"
+python -m pip install . --install-option="--max_order 7"
 mkdir -p build && cd build
 cmake .. -DKENLM_MAX_ORDER=7 -DCMAKE_INSTALL_PREFIX:PATH=/your/prefix/path
 make -j all install
@@ -23,18 +22,11 @@ import pandas as pd
 import os
 from pathlib import Path
 
-base_path = Path(__file__).parent
-path_newbisents = (base_path / "../data/01-intermediate/EN-RO-bisentences_new.txt").resolve()
-path_annotated= (base_path / "../data/01-intermediate/01-02-bicleaner-cleaned/01-annotated_bisentences.txt").resolve()
-path_cleaned= (base_path / "../data/01-intermediate/01-02-bicleaner-cleaned/02-cleaned_bisentences.txt").resolve()
+base_path = Path(__file__).parent.parent
+path_L1 = (base_path / "../data/DCEP/01-intermediate/L1_basic/L1_basic.txt").resolve()
+path_L1_annotated= (base_path / "../data/DCEP/01-intermediate/L1_basic/L1_annotated.txt").resolve()
 
-path_source_raw= (base_path / "../data/01-intermediate/01-01-fulldata/EN_raw.txt").resolve()
-path_target_raw= (base_path / "../data/01-intermediate/01-01-fulldata/RO_raw.txt").resolve()
-
-path_source_cleaned= (base_path / "../data/01-intermediate/01-02-bicleaner-cleaned/EN_cleaned.txt").resolve()
-path_target_cleaned=(base_path / "../data/01-intermediate/01-02-bicleaner-cleaned/RO_cleaned.txt").resolve()
-
-path_ENRO_bisents = (base_path / "../data/00-raw/EN-RO-bisentences.txt").resolve()
+path_ENRO_bisents = (base_path / "../data/DCEP/00-raw/EN-RO-bisentences.txt").resolve()
 
 #quoting is to correctly include quote in quote strings as one field when reading the file
 df=pd.read_csv(path_ENRO_bisents, sep='\t', names=['english', 'romanian'], quoting=3)
@@ -42,34 +34,61 @@ df=pd.read_csv(path_ENRO_bisents, sep='\t', names=['english', 'romanian'], quoti
 df=df.dropna()
 #no duplicate rows
 df=df.drop_duplicates()
-#also no alternative translation because this introduces leaked sentences into train set (especially subset english)
+df=df.drop_duplicates(subset="english")
+df_L1=df.drop_duplicates(subset="romanian")
 
-def write_to_file(file_path, df):
-    with open(file_path, "w") as myfile:
-        for index, row in df.iterrows():
-            myfile.write(str(row["english"])+"\t"+str(row["romanian"])+"\n")
+#write df_L1 to txt file
+df_L1.to_csv(path_L1, index=None, header=False)
 
-#create basic version of EN-RO-bisentences_new.txt without NaN and duplicates=====================================================
-write_to_file(path_newbisents, df)
+os.system(f"bicleaner-hardrules {path_L1} -s en -t ro --annotated_output --disable_minimal_length > {path_L1_annotated}")
 
-#create cleaned versions: EN_cleaned.txt and RO_cleaned.txt text file with bicleaner===============================================
-os.system(f"bicleaner-hardrules {path_newbisents} -s en -t ro --annotated_output --disable_minimal_length > {path_annotated}")
+df_L1_annotated=pd.read_csv(path_L1_annotated, sep="\t", names=['english', 'romanian', 'yesno', 'reason'], quoting=3)
+df_L2=df_L1_annotated.loc[df_L1_annotated['reason'] == 'keep']
+df_L2=df_L2[["english", "romanian"]]
 
-df_annotated=pd.read_csv(path_annotated, sep="\t", names=['english', 'romanian', 'yesno', 'reason'], quoting=3)
-df_cleaned=df_annotated.loc[df_annotated['reason'] == 'keep']
-df_no_annotations=df_cleaned[["english", "romanian"]]
 
-write_to_file(path_cleaned, df_no_annotations)
+#dev and test sets are created from the L2_strong set
+test=df_L2.sample(n=2000, random_state=42)
+temp_train=df_L2.drop(test.index)
 
-#create single EN_cleaned and RO_cleaned txt files==================================================================================
-df_EN_cleaned=df_no_annotations.iloc[:,0]
-df_EN_cleaned.to_csv(path_source_cleaned, header=None, index=False)
+dev=temp_train.sample(n=2000, random_state=42)
+train=temp_train.drop(dev.index)
 
-df_RO=df_no_annotations.iloc[:,1]
-df_RO.to_csv(path_target_cleaned, header=None, index=False)
+#remove those entries from L1_basic which are now contained in dev or test
+df_L1=df_L1.drop(test.index)
+df_L1=df_L1.drop(dev.index)
 
-#create single EN_raw and RO_raw txt files==========================================================================================
-df_EN_raw=df.iloc[:,0]
-df_EN_raw.to_csv(path_source_raw, header=None, index=False)
+#disable some rules from the bicleaner (fork and modify!) to create L3, this will output L3_intermediate.txt of size 614480 
+#
+#remove dev and test from L3 => after removing dev and test 610480
+#
+#write all df's to files
+source_L1=df_L1.iloc[:,0]
+target_L1=df_L1.iloc[:,1]
 
-df_RO_raw=df.iloc[:,1]
+path_L1_train_en=(base_path / "../data/DCEP/01-intermediate/L1_basic/L1_train.en").resolve()
+source_L1.to_csv (path_L1_train_en, index = None, header = False)
+
+path_L1_train_ro=(base_path / "../data/DCEP/01-intermediate/L1_basic/L1_train.ro").resolve()
+target_L1.to_csv (path_L1_train_ro, index = None, header = False)
+
+source_L2=df_L2.iloc[:,0]
+target_L2=df_L2.iloc[:,1]
+
+path_L2_train_en=(base_path / "../data/DCEP/01-intermediate/L2_strong/L2_train.en").resolve()
+source_L2.to_csv(path_L2_train_en, index = None, header = False)
+
+path_L2_train_ro=(base_path / "../data/DCEP/01-intermediate/L2_strong/L2_train.ro").resolve()
+target_L2.to_csv(path_L2_train_ro, index = None, header = False)
+
+source_dev=dev.iloc[:,0]
+target_dev=dev.iloc[:,1]
+
+path_dev_en=(base_path / "../data/DCEP/01-intermediate/L2_strong/L2_dev.en").resolve()
+path_dev_ro=(base_path / "../data/DCEP/01-intermediate/L2_strong/L2_dev.ro").resolve()
+
+source_test=test.iloc[:,0]
+target_test=test.iloc[:,1]
+
+path_test_en=(base_path / "../data/DCEP/01-intermediate/L2_strong/L2_test.en").resolve()
+path_test_ro=(base_path / "../data/DCEP/01-intermediate/L2_strong/L2_test.ro").resolve()

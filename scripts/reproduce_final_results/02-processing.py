@@ -18,7 +18,7 @@ Steps performed in this file:
     1. word-level tokenization with sacremoses
     2. subword-level tokenization with BPE
     
-for each 02-01-preprocessed and 02-02-bicleaner-preprocessed 
+for each L1, L2 and L3 datasets
 
 """""
 import os
