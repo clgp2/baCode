@@ -24,7 +24,7 @@ from pathlib import Path
 
 base_path = Path(__file__).parent.parent
 path_L1 = (base_path / "../data/DCEP/01-intermediate/L1_basic/L1_basic.txt").resolve()
-path_L1_annotated= (base_path / "../data/DCEP/01-intermediate/L1_basic/L1_annotated.txt").resolve()
+path_L1_annotated= (base_path / "../data/DCEP/01-intermediate/L2_strong/L1_basic_annotated.txt").resolve()
 
 path_ENRO_bisents = (base_path / "../data/DCEP/00-raw/EN-RO-bisentences.txt").resolve()
 

@@ -3,3 +3,7 @@ models/
 .ipynb_checkpoints/
 JoeyYamlFiles/
 NLPinAction/
+mt_output/
+old_slurm_outs/
+sacrebleuFinal/
+notebooks/sentence_mebeddings.ipynb

@@ -11,7 +11,7 @@
 #os.system is bad practice
 
 """""
-Script to turn data into modelling input. creates tokenized and byte-pair-encoded input files for 02-01-preprocessed/ and for 02-02-bicleaner-preprocessed/
+Script to turn data into modelling input
 
 Steps performed in this file:
 
@@ -27,7 +27,6 @@ from pathlib import Path
 from sklearn.model_selection import train_test_split
 #from subword_nmt.apply_bpe import BPE
 import urllib.request
-#for performance: better fast-mosestokenizer?
 from sacremoses import MosesTokenizer
 
 src_lang="en"
