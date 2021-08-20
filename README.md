@@ -14,9 +14,8 @@ pip install -r requirements.txt
 1. **Download the data**
 * use scripts/00-raw.py to download the English-Romanian language pair from the Digital Corpus of the European Parliament (DCEP)
 
-2. **Clean & tokenize the data**
+2. **Clean the data**
 
-**Clean**
 * use notebooks/01-intermediate.ipynb to clean the EN-RO DCEP data into L1, L2 and L3
 
 General:
@@ -43,21 +42,21 @@ Example: ``` bicleaner-hardrules {path_L1} -s en -t ro --annotated_output --disa
 
 Note: make sure to first remove the duplicates from your dataset for example with ```df=df.drop_duplicates()```
 
-**Tokenize**
+3. **Tokenize the data**
 * use notebooks/02-processing.ipynb to turn the data into input to the neural network by tokenizing it on word and subword level
 
 General:
 * use scripts/02-processing.py to tokenize a text file on word and subword level
 
-3. **Train and test the data**
+4. **Train and test the data**
 * see notebooks/03-modelling.ipynb for an example on how to train and test with JoeyNMT. More information on the oficial documentation [here](https://github.com/joeynmt/joeynmt)
 see JoeyYamlFile/ for the used config files
 
-4. **Postprocess the data**
+5. **Postprocess the data**
 * run ``` sacremoses -l ro detokenize < path/to/tokenized_output > out.detok.txt ```
 to detokenize the JoeyNMT output. (JoeyNMT reverses only the BPE, not the word-level tokenization)
 
-5. **Evaluate the data**
+6. **Evaluate the data**
 * run  ```sacrebleu path/to/detokenized_reference -i path/to/out.detok.txt -m bleu chrf ter```
 to compute BLEU, chrF and TER
 * run ```bert-score -r path/to/detokenized_reference -c path/to/out.detok.txt --lang ro```
