@@ -1,0 +1,85 @@
+name: "L1_0308_300"
+
+data:
+    src: "en"
+    trg: "ro"
+    train: "../data/DCEP/02-preprocessed/L1_basic/L1_train_tok.bpe"
+    dev: "../data/DCEP/02-preprocessed/L2_strong/L2_dev_tok.bpe"
+    test: "../data/DCEP/02-preprocessed/L2_strong/L2_test_tok.bpe"
+    level: "bpe"
+    lowercase: False
+    max_sent_length: 300
+    src_vocab: "../data/DCEP/02-preprocessed/vocab.txt"
+    trg_vocab: "../data/DCEP/02-preprocessed/vocab.txt"
+
+testing:
+    beam_size: 5
+    alpha: 1.0
+
+training:
+    random_seed: 42
+    optimizer: "adam"
+    normalization: "tokens" #normalize training loss of a mini-batch by number of tokens, by number of sentences ("batch") or none (just sum up)
+    adam_betas: [0.9, 0.999]
+    #reset_scheduler: True
+    scheduling: "plateau" #reduce lr on plateau, aka after patience many number of epochs
+    patience: 3 #wait for this number of validation rounds to see if ppl has not decreased, then decrease the lr
+    decrease_factor: 0.7 #if val. score (here: ppl) has not decreased for patience many validation rounds, then lr= decrease_factor*lr
+    loss: "crossentropy"
+    learning_rate: 0.0002
+    learning_rate_min: 0.0000001
+    weight_decay: 0.0
+    label_smoothing: 0.1
+    batch_size: 4096
+    batch_type: "token"
+    eval_batch_size: 3600
+    eval_batch_type: "token"
+    batch_multiplier: 1
+    early_stopping_metric: "ppl"
+    epochs: 100
+    validation_freq: 13000
+    logging_freq: 100
+    eval_metric: "bleu"
+    model_dir: "../models/L1_0308_300"
+    overwrite: False
+    shuffle: True
+    use_cuda: True
+    #max_output_length: 300
+    print_valid_sents: [0, 1, 2, 3]
+    keep_last_ckpts: 5
+    save_latest_ckpt: True
+
+model:
+    initializer: "xavier"
+    bias_initializer: "zeros"
+    init_gain: 1.0
+    embed_initializer: "xavier"
+    embed_init_gain: 1.0
+    tied_embeddings: True
+    tied_softmax: True
+    encoder:
+        type: "transformer"
+        num_layers: 6
+        num_heads: 8
+        embeddings:
+            embedding_dim: 512
+            scale: True
+            dropout: 0.
+        # typically ff_size = 4 x hidden_size
+        hidden_size: 512
+        ff_size: 2048
+        dropout: 0.1
+    decoder:
+        type: "transformer"
+        num_layers: 6
+        num_heads: 8
+        embeddings:
+            embedding_dim: 512
+            scale: True
+            dropout: 0.
+        # typically ff_size = 4 x hidden_size
+        hidden_size: 512
+        ff_size: 2048
+        dropout: 0.1
+
+
