@@ -63,14 +63,16 @@ General:
 * use scripts/02-processing.py to tokenize a text file on word and subword level. The word-level tokenizer used here ([sacremoses](https://github.com/rsennrich/subword-nmt)) is language-dependent, this means that input is a text file in only one language.
 
 4. **Train and test the data**
-* see notebooks/03-modelling.ipynb for an example on how to train and test with JoeyNMT. More information on the oficial documentation [here](https://github.com/joeynmt/joeynmt)
-see configs/ for the used config files for L1, L2 and L3 datasets. The only setting difference between the three config files is the validation frequency.
+Information about how to use JoeyNMT to train and test an neural machine translation system is found on the oficial documentation [here](https://github.com/joeynmt/joeynmt)
+
+* see configs/ for the used config files for L1, L2 and L3 datasets. The only setting difference between the three config files is the validation frequency.
+* see ZEDAT_HPC/ for the used shell scripts to train and test on a GPU node from the ZEDAT Curta cluster
 
 5. **Postprocess the data**
 * run ``` sacremoses -l ro detokenize < path/to/tokenized_output > out.detok.txt ```
 to detokenize the JoeyNMT output. (JoeyNMT reverses only the BPE, not the word-level tokenization)
 
-Example: ``` sacremoses -l ro detokenize < path/to/tokenized_output > out.detok.txt ```
+Example: ``` sacremoses -l ro detokenize < outputsTokenized/L1_len140.tok.dev > outputsAndReferences/L1_len140.detok.dev ```
 
 6. **Evaluate the data**
 * run  ```sacrebleu path/to/detokenized_reference -i path/to/out.detok.txt -m bleu chrf ter```
