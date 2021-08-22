@@ -70,8 +70,15 @@ see configs/ for the used config files for L1, L2 and L3 datasets. The only sett
 * run ``` sacremoses -l ro detokenize < path/to/tokenized_output > out.detok.txt ```
 to detokenize the JoeyNMT output. (JoeyNMT reverses only the BPE, not the word-level tokenization)
 
+Example: ``` sacremoses -l ro detokenize < path/to/tokenized_output > out.detok.txt ```
+
 6. **Evaluate the data**
 * run  ```sacrebleu path/to/detokenized_reference -i path/to/out.detok.txt -m bleu chrf ter```
 to compute BLEU, chrF and TER
+
+Example: ```sacrebleu outputsAndReferences/L2_dev_detok_reference.ro -i outputsAndReferences/L1_len140.detok.dev -m bleu chrf ter```
+
 * run ```bert-score -r path/to/detokenized_reference -c path/to/out.detok.txt --lang ro```
 to compute the bert-score
+
+Example: ```bert-score -r outputsAndReferences/L2_dev_detok_reference.ro -c outputsAndReferences/L1_len140.detok.dev --lang ro```
