@@ -4,7 +4,6 @@ import tarfile
 import os
 from pathlib import Path
 import shutil
-#check import yaml
 
 base_path = Path(__file__).parent.parent
 

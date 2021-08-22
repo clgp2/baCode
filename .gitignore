@@ -5,7 +5,6 @@ JoeyYamlFiles/
 NLPinAction/
 mt_output/
 old_slurm_outs/
-sacrebleuFinal/
 notebooks/sentence_embeddings.ipynb
 notebooks/wmt16preprocess.ipynb
 notebooks/visualizations.ipynb
