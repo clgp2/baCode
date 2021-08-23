@@ -83,7 +83,7 @@ to compute BLEU, chrF and TER. Documentation can be found [here](https://github.
 
 Example: ```sacrebleu outputs_and_refs_detok/outputs_and_refs_detok_leftout/L2_dev_detok_reference.ro -i outputs_and_refs_detok/outputs_and_refs_detok_leftout/L1_len140.detok.dev -m bleu chrf ter``` or
 
-```sacrebleu outputs_and_refs_detok/outputs_and_refs_detok_leftout/L2_test_detok_reference.ro -i outputs_and_refs_detok/outputs_and_refs_detok_leftout/*.test -w 2 -m bleu chrf ter ``` for all results on the test set.
+```sacrebleu outputs_and_refs_detok/outputs_and_refs_detok_leftout/L2_test_detok_reference.ro -i outputs_and_refs_detok/outputs_and_refs_detok_leftout/*.test -w 2 -m bleu chrf ter ``` for all results on the leftout test set.
 
 * run ```bert-score -r path/to/detokenized_reference -c path/to/out.detok.txt --lang ro```
 to compute the bert-score. Documentation can be found [here](https://github.com/Tiiiger/bert_score).
