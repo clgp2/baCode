@@ -88,4 +88,4 @@ Example: ```sacrebleu outputs_and_refs_detok/outputs_and_refs_detok_leftout/L2_d
 * run ```bert-score -r path/to/detokenized_reference -c path/to/out.detok.txt --lang ro```
 to compute the bert-score. Documentation can be found [here](https://github.com/Tiiiger/bert_score).
 
-Example: ```bert-score -r outputsAndReferences/L2_dev_detok_reference.ro -c outputsAndReferences/L1_len140.detok.dev --lang ro```
+Example: ```!bert-score -r outputs_and_refs_detok/outputs_and_refs_detok_leftout/L2_dev_detok_reference.ro -c outputs_and_refs_detok/outputs_and_refs_detok_leftout/L1_len140.detok.dev --lang ro```
