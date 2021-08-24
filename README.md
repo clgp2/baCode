@@ -26,11 +26,11 @@ From command line the same command without "%"
 ## Steps to train and evaluate a Neural Machine Translation System:
 
 1. **Download the data**
-* use scripts/00-raw.py to download the English-Romanian language pair from the Digital Corpus of the European Parliament (DCEP) or any other bilingual data. The data must be sentence-aligned parallel data, with a sentence pair per line and tab-delimited. 
+* use scripts/00-download_dcep.py to download the English-Romanian language pair from the Digital Corpus of the European Parliament (DCEP) or any other bilingual data. The data must be sentence-aligned parallel data, with a sentence pair per line and tab-delimited. 
 
 2. **Clean the data**
 
-* use notebooks/01-intermediate.ipynb to clean the EN-RO DCEP data into L1, L2 and L3
+* use notebooks/01_clean_dcep.ipynb to clean the EN-RO DCEP data into L1, L2 and L3
 
 General:
 run bicleaner-hardrules with all or just some rules. Additionally to the rules documented [here](https://github.com/bitextor/bicleaner), You can also use:
@@ -57,10 +57,10 @@ Example: ``` bicleaner-hardrules {path_L1} -s en -t ro --annotated_output --disa
 Note: make sure to first remove the duplicates from your dataset if any, for example with ```df=df.drop_duplicates()```
 
 3. **Tokenize the data**
-* use notebooks/02-processing.ipynb to turn the data into input to the neural network by tokenizing it on word and subword level
+* use notebooks/02_preprocess_dcep.ipynb to turn the data into input to the neural network by tokenizing it on word and subword level
 
 General:
-* use scripts/02-processing.py to tokenize a text file on word (step 1) and subword (step 2) level. 
+* use scripts/preprocess.py to tokenize a text file on word (step 1) and subword (step 2) level. 
 
 The word-level tokenizer used here ([sacremoses](https://github.com/alvations/sacremoses)) is language-dependent, this means that input must be a text file in only one language. Documentation on the subword-level tokenizer can be found [here](https://github.com/rsennrich/subword-nmt).
 
@@ -75,17 +75,27 @@ Information about how to use JoeyNMT to train and test an neural machine transla
 * run ``` sacremoses -l ro detokenize < path/to/tokenized_output > out.detok.txt ```
 to detokenize the JoeyNMT output (JoeyNMT reverses only the BPE, not the word-level tokenization). Documentation can be found [here](https://github.com/alvations/sacremoses).
 
-Example: ``` sacremoses -l ro detokenize < outputsTokenized/L1_len140.tok.dev > outputsAndReferences/L1_len140.detok.dev ```
+The tokenized model outputs can be found in outputs_tok/
+
+Example: To detokenize a text file (from inside outputs_tok/) run:
+
+``` sacremoses -l ro detokenize < L1_len140.tok.dev > outputs_and_refs_detok/outputs_and_refs_detok_leftout/L1_len140.detok.dev ```
 
 6. **Evaluate the data**
 * run  ```sacrebleu path/to/detokenized_reference -i path/to/out.detok.txt -m bleu chrf ter```
 to compute BLEU, chrF and TER. Documentation can be found [here](https://github.com/mjpost/sacrebleu).
 
-Example: ```sacrebleu outputs_and_refs_detok/outputs_and_refs_detok_leftout/L2_dev_detok_reference.ro -i outputs_and_refs_detok/outputs_and_refs_detok_leftout/L1_len140.detok.dev -m bleu chrf ter``` or
+The (already) detokenized model outputs and the references can be found in outputs_and_refs_detok/
 
-```sacrebleu outputs_and_refs_detok/outputs_and_refs_detok_leftout/L2_test_detok_reference.ro -i outputs_and_refs_detok/outputs_and_refs_detok_leftout/*.test -w 2 -m bleu chrf ter ``` for all results on the leftout test set.
+Example: To evaluate a detokenized text file (from inside outputs_and_refs_detok/outputs_and_refs_detok_leftout/) run:
+
+```sacrebleu L2_dev_detok_reference.ro -i L1_len140.detok.dev -m bleu chrf ter``` or
+
+```sacrebleu L2_test_detok_reference.ro -i *.test -m bleu chrf ter ``` to evaluate all results on the leftout test set.
 
 * run ```bert-score -r path/to/detokenized_reference -c path/to/out.detok.txt --lang ro```
 to compute the bert-score. Documentation can be found [here](https://github.com/Tiiiger/bert_score).
 
-Example: ```!bert-score -r outputs_and_refs_detok/outputs_and_refs_detok_leftout/L2_dev_detok_reference.ro -c outputs_and_refs_detok/outputs_and_refs_detok_leftout/L1_len140.detok.dev --lang ro```
+Example: to evaluate a detokenized text file (from inside outputs_and_refs_detok/outputs_and_refs_detok_leftout/) run:
+
+```bert-score -r L2_dev_detok_reference.ro -c L1_len140.detok.dev --lang ro```
