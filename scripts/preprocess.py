@@ -1,4 +1,5 @@
 #file to preprocess a source and a target txt file into word-level and subword-level tokenized files, input for a nmt system
+#usage: python preprocess.py source.txt target.txt 
 import os
 from pathlib import Path
 from subword_nmt import apply_bpe
