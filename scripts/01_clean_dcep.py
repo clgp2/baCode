@@ -3,10 +3,10 @@ import os
 from pathlib import Path
 
 #base_path = Path(__file__).parents[1]
-path_ENRO_bisents = ("../../data/DCEP/00-raw/EN-RO-bisentences.txt")
-path_L1 = ("../../data/DCEP/01-intermediate/bisentences_787895.txt")
-path_L1_annotated= ("../../data/DCEP/01-intermediate/annotated_bisentences_787895.txt")
-path_L1_annotated_less= ("../../data/DCEP/01-intermediate/annotated_bisentences_787895_less_rules.txt")
+path_ENRO_bisents = ("../data/DCEP/00-raw/EN-RO-bisentences.txt")
+path_L1 = ("../data/DCEP/01-intermediate/bisentences_787895.txt")
+path_L1_annotated= ("../data/DCEP/01-intermediate/annotated_bisentences_787895.txt")
+path_L1_annotated_less= ("../data/DCEP/01-intermediate/annotated_bisentences_787895_less_rules.txt")
 
 #quoting is to correctly include quote in quote strings as one field when reading the file
 df=pd.read_csv(path_ENRO_bisents, sep='\t', names=['english', 'romanian'], quoting=3)
@@ -55,54 +55,54 @@ df_L3=df_L3.drop(dev.index)
 source_L1=df_L1.iloc[:,0]
 target_L1=df_L1.iloc[:,1]
 
-path_L1_train_en=("../../data/DCEP/01-intermediate/L1_basic/L1_train.en")
+path_L1_train_en=("../data/DCEP/01-intermediate/L1_basic/L1_train.en")
 source_L1.to_csv (path_L1_train_en, index = None, header = False)
 print("L1_train.en created")
 
-path_L1_train_ro=("../../data/DCEP/01-intermediate/L1_basic/L1_train.ro")
+path_L1_train_ro=("../data/DCEP/01-intermediate/L1_basic/L1_train.ro")
 target_L1.to_csv (path_L1_train_ro, index = None, header = False)
 print("L1_train.ro created")
 
 source_L3=df_L3.iloc[:,0]
 target_L3=df_L3.iloc[:,1]
 
-path_L3_train_en=("../../data/DCEP/01-intermediate/L3_intermediate/L3_train.en")
+path_L3_train_en=("../data/DCEP/01-intermediate/L3_intermediate/L3_train.en")
 source_L3.to_csv (path_L3_train_en, index = None, header = False)
 print("L3_train.en created")
 
-path_L3_train_ro=("../../data/DCEP/01-intermediate/L3_intermediate/L3_train.ro")
+path_L3_train_ro=("../data/DCEP/01-intermediate/L3_intermediate/L3_train.ro")
 target_L3.to_csv (path_L3_train_ro, index = None, header = False)
 print("L3_train.ro created")
 
 source_L2=train.iloc[:,0]
 target_L2=train.iloc[:,1]
 
-path_L2_train_en=("../../data/DCEP/01-intermediate/L2_strong/L2_train.en")
+path_L2_train_en=("../data/DCEP/01-intermediate/L2_strong/L2_train.en")
 source_L2.to_csv(path_L2_train_en, index = None, header = False)
 print("L2_train.en created")
 
-path_L2_train_ro=("../../data/DCEP/01-intermediate/L2_strong/L2_train.ro")
+path_L2_train_ro=("../data/DCEP/01-intermediate/L2_strong/L2_train.ro")
 target_L2.to_csv(path_L2_train_ro, index = None, header = False)
 print("L2_train.ro created")
 
 source_dev=dev.iloc[:,0]
 target_dev=dev.iloc[:,1]
 
-path_dev_en=("../../data/DCEP/01-intermediate/L2_strong/L2_dev.en")
+path_dev_en=("../data/DCEP/01-intermediate/L2_strong/L2_dev.en")
 source_dev.to_csv(path_dev_en, index=False, header=None)
 print("L2_dev.en created")
 
-path_dev_ro=("../../data/DCEP/01-intermediate/L2_strong/L2_dev.ro")
+path_dev_ro=("../data/DCEP/01-intermediate/L2_strong/L2_dev.ro")
 target_dev.to_csv(path_dev_ro, index=False, header=None)
 print("L2_dev.ro created")
 
 source_test=test.iloc[:,0]
 target_test=test.iloc[:,1]
 
-path_test_en=("../../data/DCEP/01-intermediate/L2_strong/L2_test.en")
+path_test_en=("../data/DCEP/01-intermediate/L2_strong/L2_test.en")
 source_test.to_csv(path_test_en, index=False, header=None)
 print("L2_test.en created")
 
-path_test_ro=("../../data/DCEP/01-intermediate/L2_strong/L2_test.ro")
+path_test_ro=("../data/DCEP/01-intermediate/L2_strong/L2_test.ro")
 target_test.to_csv(path_test_ro, index=False, header=None)
 print("L2_test.ro created")

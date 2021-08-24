@@ -60,9 +60,11 @@ Note: make sure to first remove the duplicates from your dataset if any, for exa
 * use notebooks/02_preprocess_dcep.ipynb to turn the data into input to the neural network by tokenizing it on word and subword level
 
 General:
-* use scripts/preprocess.py to tokenize a text file on word (step 1) and subword (step 2) level. 
+* use scripts/preprocess.py to tokenize a text file on word level. 
 
-The word-level tokenizer used here ([sacremoses](https://github.com/alvations/sacremoses)) is language-dependent, this means that input must be a text file in only one language. Documentation on the subword-level tokenizer can be found [here](https://github.com/rsennrich/subword-nmt).
+The word-level tokenizer used here ([sacremoses](https://github.com/alvations/sacremoses)) is language-dependent, this means that input must be a text file in only one language. 
+
+To tokenize on subword-level You must first learn a subword-vocabulary from Your training data. Documentation on the subword-level tokenizer subword-nmt can be found [here](https://github.com/rsennrich/subword-nmt) and an example for EN-RO in notebooks/02_preprocess_dcep.ipynb.
 
 4. **Train and test the data**
 

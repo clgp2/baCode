@@ -1,47 +1,31 @@
-#file to preprocess a source and a target txt file into word-level and subword-level tokenized files, input for a nmt system
-#usage: python preprocess.py source.txt target.txt 
-import os
-from pathlib import Path
-from subword_nmt import apply_bpe
+#file to preprocess a source and a target txt file into word-level tokenized files, input for a nmt system
+#usage example: python preprocess.py source.txt en target.txt ro
 from sacremoses import MosesTokenizer
 import sys
 
-mt_en = MosesTokenizer(lang='en')
-mt_ro = MosesTokenizer(lang='ro')
-
-#input files
+#inputs
 source_input_file = sys.argv[1]
-target_input_file = sys.argv[2]
+source_lang_id=sys.argv[2]
 
-with open(source_input_file) as rawfile, open("newstest_en_tok", "w") as tokfile:
+target_input_file = sys.argv[3]
+target_lang_id=sys.argv[4]
+
+mt_source = MosesTokenizer(lang=source_lang_id)
+mt_target = MosesTokenizer(lang=target_lang_id)
+
+
+with open(source_input_file) as rawfile, open("source.txt", "w") as tokfile:
     for i, line in enumerate(rawfile):
         data=line.rstrip()
-        tokfile.write(mt_en.tokenize(data, return_str=True)+"\n")
+        tokfile.write(mt_source.tokenize(data, return_str=True)+"\n")
 
-print("Completed writing english tokenized file")
+print("Completed tokenizing source file")
 
-with open(target_input_file) as rawfile, open("newstest_ro_tok", "w") as tokfile:
+with open(target_input_file) as rawfile, open("target.txt", "w") as tokfile:
     for i, line in enumerate(rawfile):
         data=line.rstrip()
-        tokfile.write(mt_ro.tokenize(data, return_str=True)+"\n")
+        tokfile.write(mt_target.tokenize(data, return_str=True)+"\n")
 
-print("Completed writing romanian tokenized file")
+print("Completed tokenizing target file")
 
-bpe_file="/home/bernadeta/BA_code/data/DCEP/02-preprocessed/bpe.codes.8000"
-
-with open(bpe_file, "r") as merge_file:
-    bpe=apply_bpe.BPE(codes=merge_file)
-
-with open("newstest_en_tok") as src_tok_file, open("newstest_tok_bpe.en", "w") as src_bpefile:
-    for i, line in enumerate(src_tok_file):
-        data=line.strip()
-        bpedata=bpe.process_line(data)
-        src_bpefile.write(bpedata+"\n")
-
-count_trg=0
-with open("newstest_ro_tok") as trg_tok_file, open("newstest_tok_bpe.ro", "w") as trg_bpefile:
-    for i, line in enumerate(trg_tok_file):
-        data=line.strip()
-        bpedata=bpe.process_line(data)
-        trg_bpefile.write(bpedata+"\n")
         
