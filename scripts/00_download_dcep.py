@@ -5,7 +5,7 @@ import os
 from pathlib import Path
 import shutil
 
-base_path = Path(__file__).parent.parent
+base_path = Path(__file__).parent
 
 #path to files
 path_en_monolingual = (base_path / "../EN.gz").resolve()
@@ -18,7 +18,7 @@ path_DCEP=(base_path / "../DCEP").resolve()
 path_aligns=(base_path / "../aligns").resolve()
 path_indices=(base_path / "../indices").resolve()
 
-path_raw=(base_path / "../data/00-raw/").resolve()
+path_raw=(base_path / "../data/DCEP/00-raw/").resolve()
 
 #download monolingual datafiles
 urllib.request.urlretrieve ("http://optima.jrc.it/Resources/DCEP-2013/sentences/DCEP-sentence-EN-pub.tar.bz2", path_en_monolingual)

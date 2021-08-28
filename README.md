@@ -1,13 +1,21 @@
 # sequence to sequence neural machine translation English-Romanian
+This repository contains all necessary steps to reproduce the results presented in my bachelor thesis.
+Note: Following is based on (tested with) python 3.8
 ## Create a virtual environment
 More about venv virtual environments can be found  [here](https://docs.python.org/3/library/venv.html)
-venv - Creation of a new virtual environment (tested with python 3.8):
+venv - Creation of a new virtual environment:
 ```
 python3 -m venv /path/to/new/virtual/environment
 ```
 installing recursive with pip:
 ```
 pip install -r requirements.txt
+```
+Additionaly, to use the [bicleaner tool](https://github.com/bitextor/bicleaner) in step 2 (Clean the data), the KenLM Python bindings are needed. Install by running:
+```
+git clone https://github.com/kpu/kenlm
+cd kenlm
+python -m pip install . --install-option="--max_order 7"
 ```
 
 ## View training progress with Tensorboard
@@ -26,11 +34,13 @@ From command line the same command without "%"
 ## Steps to train and evaluate a Neural Machine Translation System:
 
 1. **Download the data**
-* use scripts/00-download_dcep.py to download the English-Romanian language pair from the Digital Corpus of the European Parliament (DCEP) or any other bilingual data. The data must be sentence-aligned parallel data, with a sentence pair per line and tab-delimited. 
+* use scripts/00_download_dcep.py to download the English-Romanian language pair from the Digital Corpus of the European Parliament (DCEP). You can use Your own bilingual data, but it must be sentence-aligned parallel data, with a sentence pair per line and tab-delimited. 
 
 2. **Clean the data**
 
 * use notebooks/01_clean_dcep.ipynb to clean the EN-RO DCEP data into L1, L2 and L3
+
+L1 is the raw bilingual DCEP dataset without duplicates (row duplicates or subset duplicates). L2 and L3 are the results of applying the bicleaner tool with a given set of rules.
 
 General:
 run bicleaner-hardrules with all or just some rules. Additionally to the rules documented [here](https://github.com/bitextor/bicleaner), You can also use:
@@ -54,15 +64,15 @@ run bicleaner-hardrules with all or just some rules. Additionally to the rules d
 
 Example: ``` bicleaner-hardrules {path_L1} -s en -t ro --annotated_output --disable_minimal_length > {path_L1_annotated} ```
 
-Note: make sure to first remove the duplicates from your dataset if any, for example with ```df=df.drop_duplicates()```
+Note: It makes sense to first check and remove duplicates (if any) from your custom dataset.
 
 3. **Tokenize the data**
-* use notebooks/02_preprocess_dcep.ipynb to turn the data into input to the neural network by tokenizing it on word and subword level
+* use notebooks/02_preprocess_dcep.ipynb to turn the data into input for the neural network by tokenizing it on word and subword level
 
 General:
 * use scripts/preprocess.py to tokenize a text file on word level. 
 
-The word-level tokenizer used here ([sacremoses](https://github.com/alvations/sacremoses)) is language-dependent, this means that input must be a text file in only one language. 
+The word-level tokenizer used here ([sacremoses](https://github.com/alvations/sacremoses)) is language-dependent, this means that a language code must be provided. 
 
 To tokenize on subword-level You must first learn a subword-vocabulary from Your training data. Documentation on the subword-level tokenizer subword-nmt can be found [here](https://github.com/rsennrich/subword-nmt) and an example for EN-RO in notebooks/02_preprocess_dcep.ipynb.
 
@@ -89,7 +99,7 @@ to compute BLEU, chrF and TER. Documentation can be found [here](https://github.
 
 The (already) detokenized model outputs and the references can be found in outputs_and_refs_detok/
 
-Example: To evaluate a detokenized text file (from inside outputs_and_refs_detok/outputs_and_refs_detok_leftout/) run:
+Example: To evaluate a detokenized text file (from inside outputs_and_refs_detok/outputs_and_refs_detok_leftout/) and reproduce the results presented in the thesis run:
 
 ```sacrebleu L2_dev_detok_reference.ro -i L1_len140.detok.dev -m bleu chrf ter``` or
 
