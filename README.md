@@ -36,9 +36,9 @@ From command line the same command without "%"
 1. **Download the data**
 * use scripts/00_download_dcep.py to download the English-Romanian language pair from the Digital Corpus of the European Parliament (DCEP). You can use Your own bilingual data, but it must be sentence-aligned parallel data, with a sentence pair per line and tab-delimited. 
 
-2. **Clean the data**
+2. **Clean the data and perform traindevtest split**
 
-* use notebooks/01_clean_dcep.ipynb to clean the EN-RO DCEP data into L1, L2 and L3
+* use scripts/01_clean_dcep.py or notebooks/01_clean_dcep.ipynb (to also follow the thought process) to clean the EN-RO DCEP data into L1, L2 and L3
 
 L1 is the raw bilingual DCEP dataset without duplicates (row duplicates or subset duplicates). L2 and L3 are the results of applying the bicleaner tool with a given set of rules.
 
@@ -67,7 +67,7 @@ Example: ``` bicleaner-hardrules {path_L1} -s en -t ro --annotated_output --disa
 Note: It makes sense to first check and remove duplicates (if any) from your custom dataset.
 
 3. **Tokenize the data**
-* use notebooks/02_preprocess_dcep.ipynb to turn the data into input for the neural network by tokenizing it on word and subword level
+* use scripts/02_preprocess_dcep.py or notebooks/02_preprocess_dcep.ipynb to turn the data into input for the neural network by tokenizing it on word and subword level
 
 General:
 * use scripts/preprocess.py to tokenize a text file on word level. 

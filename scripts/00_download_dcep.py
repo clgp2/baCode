@@ -51,7 +51,8 @@ os.system("src/languagepair.py EN-RO > EN-RO-bisentences.txt")
 
 path_bisentences=(base_path / "../EN-RO-bisentences.txt").resolve()
 
-#move EN-RO-bisentences.txt to raw/
+#create data/ folder and move EN-RO-bisentences.txt
+path_raw.mkdir(parents=True, exist_ok=True)
 shutil.move(str(path_bisentences), str(path_raw))
 
 #remove temporary files
