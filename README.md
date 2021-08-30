@@ -70,7 +70,7 @@ Note: It makes sense to first check and remove duplicates (if any) from your cus
 * use scripts/02_preprocess_dcep.py or notebooks/02_preprocess_dcep.ipynb to turn the data into input for the neural network by tokenizing it on word and subword level
 
 General:
-* use scripts/preprocess.py to tokenize a text file on word level. 
+* use scripts/preprocess.py to tokenize on word level. 
 
 The word-level tokenizer used here ([sacremoses](https://github.com/alvations/sacremoses)) is language-dependent, this means that a language code must be provided. 
 

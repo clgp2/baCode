@@ -4,13 +4,13 @@
 
 #SBATCH --partition=gpu 	#use GPU partition
 #SBATCH --nodes=1		#number of nodes (max 12 GPU nodes avail)
-#SBATCH --gres=gpu:1		#number	of GPUs	per node (max=2?)		
+#SBATCH --gres=gpu:1		#number	of GPUs	per node 		
 #SBATCH --mail-user=myemail
 #SBATCH --mail-type=all		
 #SBATCH --job-name=myjobname                   
 #SBATCH --ntasks=1                         
 #SBATCH --mem=6G                      
-#SBATCH --time=00:00:00                         
+#SBATCH --time=00:00:00     #depending on needed level of precision and cost                      
 #SBATCH --qos=standard  
 
 
